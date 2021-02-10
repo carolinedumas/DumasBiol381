@@ -7,7 +7,9 @@ output:
     Theme: Cayman
     highlight: github
 ---
+
 <img src="CarolineandMaverick.jpeg" width = "165" height ="200" />
+*working on fixing these photos sorry*
 
 <img src="Lucy.jpeg" width = "100" height ="150" />
 *This is my kitty, Lucy*
@@ -16,7 +18,7 @@ output:
 *And this is my puppy, Maverick*
 
 #### Fun Fact
-I kissed the Balarney Stone in Ireland when I was 12 years old. They story is that if you kiss the Balarney stone you will get the gift of Gab. I definitely got the gift of Gab! 
+I kissed the Blarney Stone in Ireland when I was 12 years old. The story is that if you kiss the Blarney stone you will get the gift of Gab. I definitely got the gift of Gab! 
 
 #### Homework Assignments 
 
