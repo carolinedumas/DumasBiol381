@@ -1,0 +1,10 @@
+---
+title: "DumasBiol381 Webpage"
+author: "Caroline Dumas"
+date: "February 10 2021"
+output: 
+  prettydoc::html_pretty:
+    Theme: Cayman
+    highlight: github
+---
+
