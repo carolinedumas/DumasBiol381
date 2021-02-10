@@ -1,0 +1,6 @@
+---
+title: "Homework 2"
+author: "Caroline Dumas"
+date: "February 10 2021"
+output: html_document
+---

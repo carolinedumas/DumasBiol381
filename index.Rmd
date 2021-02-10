@@ -1,10 +1,17 @@
 ---
 title: "DumasBiol381 Webpage"
 author: "Caroline Dumas"
-date: "February 10 2021"
+date: "Spring 2021"
 output: 
   prettydoc::html_pretty:
     Theme: Cayman
     highlight: github
 ---
+#### Homework Assignments 
+
+#### Week 1: nothing due 
+
+#### Week 2: create webpage [Homework 2](HW2.html)
+
+
 
