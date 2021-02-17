@@ -1,0 +1,48 @@
+---
+title: "HW3 Regular Expressions"
+author: "Caroline Dumas"
+date: "February 17th 2021"
+output: html_document
+---
+### Problem 1: 
+```
+Find: \s{2,} #find spaces 2 or more  
+replace: ,  #replace with comma 
+```
+
+### Problem 2:
+```
+find: (\w+), (\w+), (.*) #find a word of any length followed by a comma and space, then another word of any length followed by a comma and space, then everything else
+replace: \2 \1 (\3) #put the second word, then first word, then in parentheses the third word
+```
+
+### Problem 3:
+```
+Find: (\w*\.mp3\s) # find a word of any length followed by .mp3 and a space
+Replace: \1\n #tab after the .mp3
+```
+
+### Problem 4: 
+```
+Find: (\d{4})(.*)(\.mp3) #find the 4 digit number, then everything else, then .mp3
+Replace: \2_\1\3 #put the title then and underscore then the number and lastly the .mps
+```
+
+### Problem 5: 
+```
+Find: (\w).*,(\w*),\w*\.\w*,(\w*) # find the first character of the first word, then the rest of the word, then the next word, then the next word, then the last word
+Replace: \1_\2,\3 #put the first letter of the first word underscore then the second word, then the last word (number)
+```
+
+### Problem 6: 
+```
+Find: (\w).*,(\w{4}).*,\w*\.\w*,(\w*) #same as problem 5 except now I am specifying on the first 4 digits of the second word
+Replace: \1_\2,\3 #same as problem 5 except now the output will be the first letter of the first word underscore the first 4 digits of the next word then the last number
+```
+
+### Problem 7: 
+```
+Find: (\w{3}).*,(\w{3}).*,(\w*\.\w*),(\w*) #same as problem 5 excpet specifying the first 3 digits of the first and second word
+Replace: \1\2, \4, \3 #put the first 3 digits of first word and the second word together, then the 2nd number then the first number
+```
+

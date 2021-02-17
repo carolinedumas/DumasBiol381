@@ -22,7 +22,9 @@ I kissed the Blarney Stone in Ireland when I was 12 years old. The story is that
 
 #### Week 1: nothing due 
 
-#### Week 2: create webpage [Homework 2](HW2.html)
+#### Week 2: [create webpage instructions](https://gotellilab.github.io/Bio381/Homeworks/Homework02_S2021.html); [Homework 2](HW2.html)
+
+#### Week 3: [Problem set website](https://gotellilab.github.io/Bio381/Homeworks/Homework03_S2021.html); [regular expressions homework answers](HW3.html)
 
 
 
