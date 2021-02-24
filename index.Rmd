@@ -26,5 +26,6 @@ I kissed the Blarney Stone in Ireland when I was 12 years old. The story is that
 
 #### Week 3: [Problem set website](https://gotellilab.github.io/Bio381/Homeworks/Homework03_S2021.html); [regular expressions homework answers](HW3.html)
 
+#### Week 4: [instructions link](https://gotellilab.github.io/Bio381/Homeworks/Homework04_S2021.html); [Typora answers](Homework 4/Homework4Typora.html) and [letter Sample](Homework 4/SampleLetter.pdf) and [Slides Sample Beamer](Homework 4/SampleSlides.pdf)
 
 
