@@ -1,2 +1,0 @@
-\beamer@sectionintoc {1}{Sema6A signaling}{3}{0}{1}
-\beamer@sectionintoc {2}{Sema6A signaling in eye development}{6}{0}{2}
