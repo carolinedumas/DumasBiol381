@@ -27,7 +27,7 @@ Manual line break with
 
 Links: [Here is my Github website](https://carolinedumas.github.io/DumasBiol381/)
 
-Images: [here is a picture of my dog](DumasBiol381/Maverick.jpeg)
+Images: [here is a picture of my dog](https://github.com/carolinedumas/DumasBiol381/blob/main/Maverick.jpeg?raw=true)
 
 block quotes: 
 > Once upton a time 
