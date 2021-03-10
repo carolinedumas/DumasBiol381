@@ -63,7 +63,7 @@ Content Cell  | Content Cell
 
 ==highlight== 
 
-![](/Users/carolinedumas/Desktop/Computational biology /DumasBiol381/Homework 4/causeandeffectdiagram.jpg)
+![](https://github.com/carolinedumas/DumasBiol381/blob/main/Homework%204/causeandeffectdiagram.jpg?raw=true )
 
 
 
