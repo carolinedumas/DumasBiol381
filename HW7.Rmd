@@ -1,0 +1,195 @@
+---
+title: "HW7"
+author: "Caroline Dumas"
+date: "March 17, 2021"
+output: html_document
+---
+
+## Simulating and fitting data distributions - Fake data
+```{r}
+library(ggplot2) # for graphics
+library(MASS) # for maximum likelihood estimation
+
+# quick and dirty, a truncated normal distribution to work on the solution set
+
+z <- rnorm(n=3000,mean=0.2)
+z <- data.frame(1:3000,z)
+names(z) <- list("ID","myVar")
+z <- z[z$myVar>0,]
+str(z)
+summary(z$myVar)
+
+# plot histogram of data
+p1 <- ggplot(data=z, aes(x=myVar, y=..density..)) +
+  geom_histogram(color="grey60",fill="cornsilk",size=0.2) # plotting x as myVar data and y is rescaled as density so the area under the hisotgram=1
+print(p1)
+
+# add empirical density curve
+p1 <-  p1 +  geom_density(linetype="dotted",size=0.75) # curve that is fitted to the histogram to smooth out the shape of the graph and does not assume any distribution
+print(p1)
+
+# get maximium likelihood parameters for normal
+normPars <- fitdistr(z$myVar,"normal") # git a normal distribution to the data and estimate the parameters mean and variance 
+print(normPars)
+str(normPars)
+normPars$estimate["mean"] # note structure of getting a named attribute
+
+# plot normal probability density 
+meanML <- normPars$estimate["mean"] # creating a variable for the parameter estimate of "mean" from our data from above
+sdML <- normPars$estimate["sd"] # creating a variable from the "normPars" estimate for standard deviation from above
+
+xval <- seq(0,max(z$myVar),len=length(z$myVar)) # creating an x variable to use in "stat_function" for our data from "myVar"
+
+stat <- stat_function(aes(x = xval, y = ..y..), fun = dnorm, colour="red", n = length(z$myVar), args = list(mean = meanML, sd = sdML)) # aes = map plot or plot to fit the new curve to; fun = function used to create the new curve, in this case, we are using the normal distribution "dnorm"; set color of the curve with colour; n = number of points; args =  additional arguments the curve must follow, here we want the mean and sd of our normal distribution estimate from our data found above
+p1 + stat # adding our new normal distribution line to our "p1" plot of the histogram of our data. 
+# this has used the normal distribution estimates of mean and standard deviation from our data to create a normal distribution curve. 
+ # note: the normal distribution doesnt fit our data too well - there is a biased mean here
+
+# plot exponential probability density 
+expoPars <- fitdistr(z$myVar,"exponential")
+rateML <- expoPars$estimate["rate"]
+
+stat2 <- stat_function(aes(x = xval, y = ..y..), fun = dexp, colour="blue", n = length(z$myVar), args = list(rate=rateML)) # "dexp" is the function for exponential distribution; constraining our "dexp" curve to the rate estimate found above
+p1 + stat + stat2
+ 
+# plot uniform probability density 
+stat3 <- stat_function(aes(x = xval, y = ..y..), fun = dunif, colour="darkgreen", n = length(z$myVar), args = list(min=min(z$myVar), max=max(z$myVar))) # here we dont need to use fitdistr, because the parameters are just the min and max values of the data
+p1 + stat + stat2 + stat3
+ 
+# plot gamma probability density 
+gammaPars <- fitdistr(z$myVar,"gamma")
+shapeML <- gammaPars$estimate["shape"]
+rateML <- gammaPars$estimate["rate"]
+
+stat4 <- stat_function(aes(x = xval, y = ..y..), fun = dgamma, colour="brown", n = length(z$myVar), args = list(shape=shapeML, rate=rateML))
+p1 + stat + stat2 + stat3 + stat4
+
+# plot beta probability density 
+pSpecial <- ggplot(data=z, aes(x=myVar/(max(myVar + 0.1)), y=..density..)) +
+  geom_histogram(color="grey60",fill="cornsilk",size=0.2) + 
+  xlim(c(0,1)) +
+  geom_density(size=0.75,linetype="dotted")
+
+betaPars <- fitdistr(x=z$myVar/max(z$myVar + 0.1),start=list(shape1=1,shape2=2),"beta")
+shape1ML <- betaPars$estimate["shape1"]
+shape2ML <- betaPars$estimate["shape2"]
+
+statSpecial <- stat_function(aes(x = xval, y = ..y..), fun = dbeta, colour="orchid", n = length(z$myVar), args = list(shape1=shape1ML,shape2=shape2ML))
+pSpecial + statSpecial
+```
+
+## simulating and fitting data distributions with my data
+```{r}
+library(ggplot2) # for graphics
+library(MASS) # for maximum likelihood estimation
+
+# quick and dirty, a truncated normal distribution to work on the solution set
+
+#z <- rnorm(n=3000,mean=0.2)
+z <- read.table("S6aMo_UIC_eyeArea.csv",header=TRUE,sep=",", stringsAsFactors=FALSE)
+#z <- data.frame(1:3000,z)
+names(z) <- list("ID","myVar")
+z <- z[z$myVar>0,]
+str(z)
+summary(z$myVar)
+
+# plot histogram of data
+p1 <- ggplot(data=z, aes(x=myVar, y=..density..)) +
+  geom_histogram(color="grey60",fill="cornsilk",size=0.2) 
+print(p1)
+
+# add empirical density curve
+p1 <-  p1 +  geom_density(linetype="dotted",size=0.75)
+print(p1)
+
+# get maximium likelihood parameters for normal
+normPars <- fitdistr(z$myVar,"normal")
+print(normPars)
+str(normPars)
+normPars$estimate["mean"] # note structure of getting a named attribute
+
+# plot normal probability density 
+meanML <- normPars$estimate["mean"]
+sdML <- normPars$estimate["sd"]
+
+xval <- seq(0,max(z$myVar),len=length(z$myVar))
+
+stat <- stat_function(aes(x = xval, y = ..y..), fun = dnorm, colour="red", n = length(z$myVar), args = list(mean = meanML, sd = sdML))
+p1 + stat
+ 
+# plot exponential probability density 
+expoPars <- fitdistr(z$myVar,"exponential")
+rateML <- expoPars$estimate["rate"]
+
+stat2 <- stat_function(aes(x = xval, y = ..y..), fun = dexp, colour="blue", n = length(z$myVar), args = list(rate=rateML))
+p1 + stat + stat2
+ 
+# plot uniform probability density 
+stat3 <- stat_function(aes(x = xval, y = ..y..), fun = dunif, colour="darkgreen", n = length(z$myVar), args = list(min=min(z$myVar), max=max(z$myVar)))
+p1 + stat + stat2 + stat3
+ 
+# plot gamma probability density 
+gammaPars <- fitdistr(z$myVar/10,"gamma") # numbers are too large and need to be scaled down for it reads an error 
+shapeML <- gammaPars$estimate["shape"]
+rateML <- gammaPars$estimate["rate"]
+
+stat4 <- stat_function(aes(x = xval, y = ..y..), fun = dgamma, colour="brown", n = length(z$myVar), args = list(shape=shapeML, rate=rateML))
+p1 + stat + stat2 + stat3 + stat4
+
+# plot gamma probability density 
+gammaPars <- fitdistr(z$myVar/100,"gamma") # trying scaling down more to see what it does
+shapeML <- gammaPars$estimate["shape"]
+rateML <- gammaPars$estimate["rate"]
+
+stat4 <- stat_function(aes(x = xval, y = ..y..), fun = dgamma, colour="brown", n = length(z$myVar), args = list(shape=shapeML, rate=rateML))
+p1 + stat + stat2 + stat3 + stat4
+
+# plot beta probability density 
+pSpecial <- ggplot(data=z, aes(x=myVar/(max(myVar + 0.1)), y=..density..)) +
+  geom_histogram(color="grey60",fill="cornsilk",size=0.2) + 
+  xlim(c(0,1)) +
+  geom_density(size=0.75,linetype="dotted")
+
+betaPars <- fitdistr(x=z$myVar/max(z$myVar + 0.1),start=list(shape1=1,shape2=2),"beta")
+shape1ML <- betaPars$estimate["shape1"]
+shape2ML <- betaPars$estimate["shape2"]
+
+statSpecial <- stat_function(aes(x = xval, y = ..y..), fun = dbeta, colour="orchid", n = length(z$myVar), args = list(shape1=shape1ML,shape2=shape2ML))
+pSpecial + statSpecial
+```
+
+## Normal distribution fits my data best 
+Use a normal distribution maximum likelihood parameters to simulate a new data set 
+
+```{r}
+z_sim <- rnorm(n=47,mean=meanML,sd=sdML) 
+z_sim <- data.frame(1:47, z_sim)
+names(z_sim) <- list("ID1","myVar1")
+str(z_sim)
+
+# plot histogram of simulated data:
+p_sim <- ggplot(data=z_sim, aes(x=myVar1, y=..density..)) +
+  geom_histogram(color="grey60",fill="cornsilk",size=0.2) 
+print(p_sim)
+
+# add the normal probability density curve:
+xval1 <- seq(0,max(z_sim$myVar1),len=length(z_sim$myVar1))
+
+stat1 <- stat_function(aes(x = xval1, y = ..y..), fun = dnorm, colour="red", n = length(z$myVar), args = list(mean = meanML, sd = sdML))
+p_sim + stat1
+
+# plot a histogram of my original data to compare: 
+# generating the histogram plot of my data
+p1 <- ggplot(data=z, aes(x=myVar, y=..density..)) +
+  geom_histogram(color="grey60",fill="cornsilk",size=0.2)  
+
+# generating the normal probability distribution curve and adding it to the histogram...
+meanML <- normPars$estimate["mean"]
+sdML <- normPars$estimate["sd"]
+
+xval <- seq(0,max(z$myVar),len=length(z$myVar))
+
+ stat <- stat_function(aes(x = xval, y = ..y..), fun = dnorm, colour="red", n = length(z$myVar), args = list(mean = meanML, sd = sdML))
+ p1 + stat
+```
+The simulated data looks kind of similar to the original data but I would say they look more different than they do the same. Honestly, not really sure why they look very different. Maybe because I am only use an n=47. If n was higher maybe it will start to look more similar in the simulated data. 
