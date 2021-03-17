@@ -32,4 +32,6 @@ I kissed the Blarney Stone in Ireland when I was 12 years old. The story is that
 
 #### Week 6: [Matrices, lists and data frames](HW6.html)
 
+#### Week 7: [Simulating and Fitting Data Distributions](HW7.html)
+
 
