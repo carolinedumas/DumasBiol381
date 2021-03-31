@@ -1,0 +1,117 @@
+---
+title: "HW8"
+author: "Caroline Dumas"
+date: "March 31, 2021"
+output: html_document
+---
+To start simply, assume that the data in each of your treatment groups follow a normal distribution. Specify the sample sizes, means, and variances for each group that would be reasonable if your hypothesis were true. You may need to consult some previous literature and/or an expert in the field to come up with these numbers.
+
+**I have a dataset with 4 treatment groups (WT, Sema6A MO, FL rescue, DeltaC rescue) (independent variable) and a continuous variable of number pHH3 positive cells per eye field (dependent variable). Based on my data, I would expect the mean of the WT group to be 36, the mean of the Sema6A MO group to be 13, the mean of the FL rescue group and the DeltaC rescue group to be 26. I will assume the standard deviation to be 5 and equal between all of the groups. I expect a sample size of 20 to detect significance between the groups**
+
+Using the methods we have covered in class, write code to create a random data set that has these attributes. Organize these data into a data frame with the appropriate structure.
+
+```{r}
+set.seed(99)
+WT <- rnorm(n=20, mean=36, sd=5)
+head(WT)
+
+sema6aMO <- rnorm(n=20, mean=13, sd=5)
+head(sema6aMO)
+
+FLrescue <- rnorm(n=20, mean=26, sd=5)
+head(FLrescue)
+
+deltaCrescue <- rnorm(n=20, mean=26, sd=5)
+head(deltaCrescue)
+
+pHH3DataFrame <- data.frame(WT, sema6aMO,
+                            FLrescue, deltaCrescue)
+str(pHH3DataFrame)
+head(pHH3DataFrame)
+# This set up won't work for the ANOVA because we need the treatment groups in a column and the pHH3 count in the next column 
+library(tidyr)
+pHH3model <- gather(pHH3DataFrame, Treatment,
+                    pHH3_count, WT:deltaCrescue)
+print(pHH3model)
+
+```
+Now write code to analyze the data (probably as an ANOVA or regression analysis, but possibly as a logistic regression or contingency table analysis. Write code to generate a useful graph of the data.
+
+```{r}
+pHH3model_ano <- aov(pHH3_count ~ Treatment, data=pHH3model)
+print(pHH3model_ano)
+summary(pHH3model_ano)
+# There is significance 
+
+# generate a box plot for this 
+library(ggplot2)
+ano_plot <- ggplot(data=pHH3model, 
+                            aes(x=Treatment,
+                                y=pHH3_count,
+                                fill=Treatment)) +
+                            geom_boxplot()
+print(ano_plot)
+```
+Try running your analysis multiple times to get a feeling for how variable the results are with the same parameters, but different sets of random numbers.
+```{r}
+set.seed(10)
+WT <- rnorm(n=20, mean=36, sd=5)
+sema6aMO <- rnorm(n=20, mean=13, sd=5)
+FLrescue <- rnorm(n=20, mean=26, sd=5)
+deltaCrescue <- rnorm(n=20, mean=26, sd=5)
+pHH3DataFrame <- data.frame(WT, sema6aMO,
+                            FLrescue, deltaCrescue)
+library(tidyr)
+pHH3model <- gather(pHH3DataFrame, Treatment,
+                    pHH3_count, WT:deltaCrescue)
+pHH3model_ano <- aov(pHH3_count ~ Treatment, data=pHH3model)
+print(pHH3model_ano)
+summary(pHH3model_ano)
+# There is significance 
+
+# generate a box plot for this 
+library(ggplot2)
+ano_plot <- ggplot(data=pHH3model, 
+                            aes(x=Treatment,
+                                y=pHH3_count,
+                                fill=Treatment)) +
+                            geom_boxplot()
+print(ano_plot)
+```
+Now begin adjusting the means of the different groups. Given the sample sizes you have chosen, how small can the differences between the groups be (the “effect size”) for you to still detect a significant pattern (p < 0.05)?
+```{r}
+# for this data set there are 3 groups that are different so I am going to change them all the same way to see when the significance goes away. 
+set.seed(20)
+WT <- rnorm(n=20, mean=36, sd=5)
+sema6aMO <- rnorm(n=20, mean=31, sd=5)
+FLrescue <- rnorm(n=20, mean=31, sd=5)
+deltaCrescue <- rnorm(n=20, mean=31, sd=5)
+pHH3DataFrame <- data.frame(WT, sema6aMO,
+                            FLrescue, deltaCrescue)
+library(tidyr)
+pHH3model <- gather(pHH3DataFrame, Treatment,
+                    pHH3_count, WT:deltaCrescue)
+pHH3model_ano <- aov(pHH3_count ~ Treatment, data=pHH3model)
+print(pHH3model_ano)
+summary(pHH3model_ano)
+```
+**So this makes sense, once I change the 3 groups that were not WT to within the sd of 5 of the WT group it was no longer significant so there must be at least 6 count difference for there to be significance between any of the groups.**
+
+Alternatively, for the effect sizes you originally hypothesized, what is the minimum sample size you would need in order to detect a statistically significant effect? Again, run the model a few times with the same parameter set to get a feeling for the effect of random variation in the data.
+```{r}
+# going back to the original mean numbers and changing the n value for all of them 
+set.seed(30)
+WT <- rnorm(n=3, mean=36, sd=5)
+sema6aMO <- rnorm(n=3, mean=13, sd=5)
+FLrescue <- rnorm(n=3, mean=26, sd=5)
+deltaCrescue <- rnorm(n=3, mean=26, sd=5)
+pHH3DataFrame <- data.frame(WT, sema6aMO,
+                            FLrescue, deltaCrescue)
+library(tidyr)
+pHH3model <- gather(pHH3DataFrame, Treatment,
+                    pHH3_count, WT:deltaCrescue)
+pHH3model_ano <- aov(pHH3_count ~ Treatment, data=pHH3model)
+print(pHH3model_ano)
+summary(pHH3model_ano)
+```
+**A little bit crazy, but only having an n of 3 still allows for significance between the groups.**
