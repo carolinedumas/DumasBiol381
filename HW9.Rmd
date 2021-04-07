@@ -1,0 +1,188 @@
+---
+title: "HW9"
+author: "Caroline Dumas"
+date: "April 4, 2021"
+output: html_document
+---
+
+Use the code that you worked on in Homework #8 (creating fake data sets), and re-organize it following the principles of structured programming. Do all the work in a single chunk in your R markdown file, just as if you were writing a single R script. Start with all of your annotated functions, preliminary calls, and global variables. The program body should be only a few lines of code that call the appropriate functions and run them in the correct order. Make sure that the output from one function serves as the input to the next. You can either daisy-chain the functions or write separate lines of code to hold elements in temporary variables and pass the along.
+
+```{r}
+# load libraries ------------------------
+library(ggplot2)
+library(tidyr)
+
+# Global Variables ------------------------
+WT <- rnorm(n=20, mean=36, sd=5)
+
+sema6aMO <- rnorm(n=20, mean=13, sd=5)
+
+FLrescue <- rnorm(n=20, mean=26, sd=5)
+
+deltaCrescue <- rnorm(n=20, mean=26, sd=5)
+
+# ------------------------------
+# FUNCTION get_data
+# description: generate data frame
+# inputs: pHH3 counts for WT, sema6aMO, FLrescue, deltaCrescue
+# outputs: data frame
+#################################
+get_data <- function(WT=runif(20),
+                     sema6aMO=runif(20),
+                     FLrescue=runif(20),
+                     deltaCrescue=runif(20)) {
+  
+  short_frame <- data.frame(WT, sema6aMO,FLrescue, deltaCrescue)
+  pHH3_dataframe <- gather(short_frame, treatment,
+                    pHH3_count,
+                    WT:deltaCrescue)
+
+return(pHH3_dataframe)  
+
+} # end of get_data
+# ------------------------------
+
+# ------------------------------
+# FUNCTION calculate_anova
+# description: run ANOVA model on data
+# inputs: treatment, pHH3_count
+# outputs: ANOVA model 
+#################################
+calculate_anova <- function(treatment=runif(10),
+                            pHH3_count=runif(10)) {
+  
+  pHH3_anova <- aov(pHH3_count~treatment)
+
+
+return(pHH3_anova)  
+
+} # end of calculate_anova
+# ------------------------------
+
+# ------------------------------
+# FUNCTION summarize_anova
+# description: print summary of ANOVA
+# inputs: ANOVA model 
+# outputs: summar table of ANOVA
+#################################
+summarize_anova <- function(x=NULL){
+  if(is.null(x)) {
+    x <- summary(lm(runif(10)~runif(10)))
+  }
+  anova_summary <- summary(x)
+
+return(anova_summary)  
+
+} # end of summarize_anova
+# ------------------------------
+
+# ------------------------------
+# FUNCTION graph_rnorm
+# description: plotting pHH3 graph
+# inputs: treatment, pHH3_count
+# outputs: box plot 
+#################################
+graph_rnorm <- function(treatment=runif(10),
+                            pHH3_count=runif(10)) {
+  
+  anova_plot <- ggplot(data=count_data,
+                       aes(x=treatment, 
+                           y=pHH3_count,
+                           fill=treatment)) +
+                      geom_boxplot()
+
+return(anova_plot)  
+
+} # end of graph_rnorm
+# ------------------------------
+
+#####################################################
+# program body ------------------------
+
+# create data frame
+count_data <- get_data(WT=WT, 
+                       sema6aMO=sema6aMO,
+                       FLrescue=FLrescue,
+                       deltaCrescue=deltaCrescue)
+
+# calculate anova and summary of anova
+cal_ano <- calculate_anova(treatment=count_data$treatment,
+                           pHH3_count=count_data$pHH3_count)
+print(cal_ano)
+
+sum_ano <- summarize_anova(x=cal_ano)
+print(sum_ano)
+
+# graph results 
+graph_rnorm(treatment=treatment, pHH3_count=pHH3_count) #used count_data variable in function 
+```
+
+Once your code is up and working, modify your program do something else: record a new summary variable, code a new statistical analysis, or create a different set of random variables or output graph. Do not rewrite any of your existing functions. Instead, copy them, rename them, and then modify them to do new things. Once your new functions are written, add some more lines of program code, calling a mixture of your previous functions and your new functions to get the job done.
+
+**adding functions for pulling pvalue from ANOVA and a Tukey multiple comparisons**
+
+```{r}
+# ------------------------------
+# FUNCTION pull_pvalue
+# description: get p-value from summary ANOVA
+# inputs: isummary of ANOVA
+# outputs: p-value
+#################################
+pull_pvalue <- function(x=NULL) {
+  if(is.null(x)) {
+    x <- summary(lm(runif(10)~runif(10)))
+  }
+  summary_unlist <- unlist(x)
+
+return(summary_unlist["Pr(>F)1"])  
+
+} # end of pull_pvalue
+# ------------------------------
+
+# ------------------------------
+# FUNCTION tukey_multicomp
+# description: tukey multiple comparisons on ANOVA
+# inputs: anova 
+# outputs: summary of tukey multiple comparisons
+#################################
+tukey_multipcomp <- function(treatment=c(rep("WT",5), rep("MO",5)),
+                             pHH3_count=runif(10)) {
+  temp1 <- aov(pHH3_count~treatment)
+  Tukey <- TukeyHSD(x = temp1, 
+                    which = "treatment",
+                    conf.level = 0.95)
+  
+  return(Tukey)  
+} # end of tukey_multipcomp
+# ------------------------------
+#####################################################
+# program body ------------------------
+
+# create data frame
+count_data <- get_data(WT=WT, 
+                       sema6aMO=sema6aMO,
+                       FLrescue=FLrescue,
+                       deltaCrescue=deltaCrescue)
+
+# calculate anova and summary of anova
+cal_ano <- calculate_anova(treatment=count_data$treatment,
+                           pHH3_count=count_data$pHH3_count)
+print(cal_ano)
+
+sum_ano <- summarize_anova(x=cal_ano)
+print(sum_ano)
+
+# pull pvalue
+pval <- pull_pvalue(x=sum_ano)
+print(pval)
+
+# Tukey multiple comparisons
+tukey <- tukey_multipcomp(treatment = count_data$treatment,
+                          pHH3_count = count_data$pHH3_count)
+
+print(tukey)
+
+# graph results 
+graph_rnorm(treatment=treatment, pHH3_count=pHH3_count) #used count_data variable in function 
+```
+

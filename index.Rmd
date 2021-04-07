@@ -36,4 +36,6 @@ I kissed the Blarney Stone in Ireland when I was 12 years old. The story is that
 
 #### Week 9: [Creating Fake data sets to explore hypothesis](HW8.html)
 
+#### Week 10: [stuctured programming of week 9 homework](HW9.html)
+
 
