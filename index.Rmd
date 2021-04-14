@@ -38,4 +38,6 @@ I kissed the Blarney Stone in Ireland when I was 12 years old. The story is that
 
 #### Week 10: [stuctured programming of week 9 homework](HW9.html)
 
+#### Week 11: [For loops and randomization tests](HW10.html)
+
 

@@ -1,0 +1,229 @@
+---
+title: "HW10"
+author: "Caroline Dumas"
+date: "April 14, 2021"
+output: html_document
+---
+1. Using a for loop, write a function to calculate the number of zeroes in a numeric vector. Before entering the loop, set up a counter variable counter <- 0. Inside the loop, add 1 to counter each time you have a zero in the matrix. Finally, use return(counter) for the output.
+
+```{r}
+# ------------------------------
+# FUNCTION find_zeros
+# description: count number of zeros in a matrix
+# inputs: matrix of nrow and ncol
+# outputs: number of zeros in the matrix
+#################################
+number_zeros <- function(m=NULL){
+  if(is.null(m)){
+    m_vec <- sample(rep(c(0,1), 10))
+    m <- matrix(m_vec, nrow=4)
+  }
+  counter <- 0
+  for(i in 1:nrow(m)) {
+    for(j in 1:ncol(m)) {
+      if(m[i,j] == 0) {
+        counter <- counter + 1}
+    } # end column loop
+  } # end row loop
+  return(counter)
+} # end of number_zeros
+# ------------------------------
+number_zeros()
+```
+
+2. Use subsetting instead of a loop to rewrite the function as a single line of code.
+```{r}
+# test matrix
+m_vec <- sample(rep(c(0,1), 10))
+m <- matrix(m_vec, nrow=4)
+
+# number zeros by subsetting 
+counter <- sum(m[,] == 0) # sum of all of the zeros in the matrix, [,] will look at all rows and columns
+print(counter)
+```
+
+3. Write a function that takes as input two integers representing the number of rows and columns in a matrix. The output is a matrix of these dimensions in which each element is the product of the row number x the column number.
+```{r}
+# ------------------------------
+# FUNCTION multiply_row_col
+# description: create a matrix that multiplies the row and column number and puts that value in for the element (ex: row 3, col 2 would hold value 6)
+# inputs: row numbers (r) and column numbers (c)
+# outputs: multiplication matrix 
+#################################
+multiply_row_col <- function(r=4,
+                             c=5){
+  m <- matrix(NA, nrow=r, ncol=c) # will matrix with NA
+  for(i in 1:nrow(m)) {
+    for(j in 1:ncol(m)) {
+      m[i,j] <- i*j
+    } # end column loop
+  } # end row loop 
+ return(m)
+} # end of multiply_row_col
+# ------------------------------
+multiply_row_col()
+multiply_row_col(r=5, c=6)
+```
+
+4. Use the code from the April 8th lecture (Randomization Tests) to design and conduct a randomization test for some of your own data. You will need to modify the functions that read in the data, calculate the metric, and randomize the data. Once those are set up, the program should run correctly calling your new functions. Also, to make your analysis fully repeatable, make sure you set the random number seed at the beginning (use either set.seed() in base R, or char2seed in the TeachingDemos package).
+
+```{r}
+# Preliminaries ------------------------
+library(ggplot2)
+library(TeachingDemos)
+library(tidyverse)
+library(dplyr)
+char2seed("MS/MS")
+
+# ------------------------------
+# FUNCTION read_data
+# description: read in (or generate) data set for analysis
+# inputs: file name (or nothing, as in this demo)
+# outputs: 3 column data frame of observed data (ID, x, y)
+#################################
+read_data <- function(z=NULL){
+  if(is.null(z)) {
+    x_obs <- c(rep("trt1", 10), rep("trt2", 10))
+    y_obs <- rnorm(20)
+    df <- data.frame(ID=seq_along(x_obs),
+                     x_obs,
+                     y_obs)
+  }
+  df <- read.table(file=z,
+                   header=TRUE,
+                   sep=",",
+                   stringsAsFactors=FALSE)
+return(df)  
+
+} # end of read_data
+# ------------------------------
+#read_data()
+
+# ------------------------------
+# FUNCTION get_metric
+# description: calculate metric for randomization test
+# inputs: 2-column data frame for mean of treatment groups
+# outputs: x_obs different in means between treatment groups
+#################################
+get_metric <- function(z=NULL){
+  if(is.null(z)) {
+    x_obs <- c(rep("trt1", 10), rep("trt2", 10))
+    y_obs <- rnorm(20)
+    df <- data.frame(ID=seq_along(x_obs),
+                     x_obs,
+                     y_obs)
+  }
+  mean_y_obs <- z %>%
+    group_by(x_obs) %>%
+    summarize(mean_y_obs=mean(y_obs))
+  # using dplyr to: group the data by the x_obs (trt group) and then summarize to find the mean of each trt group. all piped together 
+  
+  mean_diff <- mean_y_obs[2,2] - mean_y_obs[1,2]
+
+return(as.numeric(mean_diff))  
+
+} # end of get_metric
+# ------------------------------
+# get_metric()
+
+# ------------------------------
+# FUNCTION shuffle_data
+# description: randomize data for regression analysis
+# inputs: 3 column data frame (ID, x, y)
+# outputs: 3 column data frame (ID, x, y)
+#################################
+shuffle_data <- function(z=NULL){
+  if(is.null(z)) {
+    x_obs <- c(rep("trt1", 10), rep("trt2", 10))
+    y_obs <- rnorm(20)
+    df <- data.frame(ID=seq_along(x_obs),
+                     x_obs,
+                     y_obs)
+  }
+  z$y_obs <- sample(z$y_obs) # randomly reshuffles the y values
+
+return(z)  
+
+} # end of shuffle_data
+# ------------------------------
+# shuffle_data()
+
+# ------------------------------
+# FUNCTION get_pval
+# description: calculate p value from simulation
+# inputs: list of observed metric and vector of simulated metrics 
+# outputs: lower and upper tail probability value 
+#################################
+get_pval <- function(z=NULL){
+  if(is.null(z)) {
+    z <- list(rnorm(1), rnorm(1000)) 
+  }
+  p_lower <- mean(z[[2]] <= z[[1]]) # what is the proportion of the 1000 simulated cases for which the simulated value is less than the obs value
+  p_upper <- mean(z[[2]] >= z[[1]]) # what is the proportion of the 1000 simulated cases for which the simulate value is greater than the obs value
+ 
+return(c(pL=p_lower, pU=p_upper))  
+
+} # end of get_pval
+# ------------------------------
+# get_pval() # the two pvalues should add up to 1
+
+# ------------------------------
+# FUNCTION plot_ran_test
+# description: create a ggplot histogram of simulated values
+# inputs: list of observed metric and vector of simulated metrics
+# outputs: saved ggplot graph
+#################################
+plot_ran_test <- function(z=NULL){
+  if(is.null(z)) {
+    z <- list(rnorm(1), rnorm(1000)) 
+  }
+  
+  df <- data.frame(ID=seq_along(z[[2]]),
+                   sim_x=z[[2]])
+  p1 <- ggplot(data=df, mapping=aes(x=sim_x))
+  p1 + geom_histogram(mapping=aes(fill=I("goldenrod"),
+                                  color=I("black"))) + geom_vline(aes(xintercept=z[[1]], color="blue"))
+
+
+} # end of plot_ran_test
+# ------------------------------
+# plot_ran_test()
+
+# program body ------------------------
+
+data <- "HW10_data_pHH3count.csv"
+n_sim <- 1000 # number of simulated data sets 
+x_sim <- rep(NA, n_sim) # set up empty vector for simulated slopes 
+
+# read in data 
+df <- read_data(z=data) 
+
+# get metrix of mean difference between treatment groups
+x_obs <- get_metric(z=df) 
+
+# shuffle data 
+for (i in seq_len(n_sim)) {
+  x_sim[i] <- get_metric(shuffle_data(z=df))
+} 
+
+# extracting data from observed and simulated 
+mean_diff <- list(x_obs, x_sim) 
+
+# get p-values
+get_pval(mean_diff)
+
+# plot metrics
+plot_ran_test(mean_diff) # golden bars = 1000 simulated slopes, blue line = obs slope from data
+```
+
+The siulated data (yellow histogram) and the observed data (blue line) are very different. So this says that the 2 treatment groups differe significantly in means more than just by chance. 
+
+5. For comparison, calculate in R the standard statistical analysis you would use with these data. How does the p-value compare for the standard test versus the p value you estimated from your randomization test? If the p values seem very different, run the program again with a different starting seed (and/or increase the number of replications in your randomization test). If there are persistent differences in the p value of the standard test versus your randomization, what do you think is responsible for this difference?
+```{r}
+df <- read_data(z=data)
+anova <- aov(df$y_obs ~ df$x_obs, data=df)
+print(summary(anova))
+```
+
+The p-value calculated from the anova is practically zero which means the treatment group means is sifnificanly different. The p-value from the randomization test was also zero so this suggest the randomization test is a good way to look at this data. 
+
