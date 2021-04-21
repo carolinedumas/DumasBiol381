@@ -1,0 +1,59 @@
+---
+title: "HW11"
+author: "Caroline Dumas"
+date: "4/21/2021"
+output: html_document
+---
+Repeat the exercise from the Batch Processing Lecture (13 April), but do it using real data sets rather than purely simulated. Check with folks in your lab to see if there are multiple data sets available for analysis, or ask Nick or Lauren for suggestions for other data sources. Stick to simple data analyses and graphics, but try to set it up as a batch process that will work on multiple files and save summary results to a common file.
+
+I have large excel files that come out of my mass spectrometry data. I want to extract the number of unique gene symbols for each file. 
+
+```{r}
+##############################
+# Global variables 
+file_folder <- "Homework11_files/"
+n_files <- 6
+files_out <- "GeneSymbols_NCK.csv"
+##############################
+
+# gather files 
+file_names <- list.files(path=file_folder)
+
+# create a data frame to hold summary file statistics 
+ID <- seq_along(file_names)
+file_name <- file_names
+Avg_GeneSymbol_length <- rep(NA, length(file_names))
+
+
+
+stats_out <- data.frame(ID, file_name, Avg_GeneSymbol_length)
+
+
+# batch process by looping through individual files 
+for(i in seq_along(file_names)) {
+  data <- read.table(file=paste(file_folder, file_names[i], sep=""), 
+                     sep=",", 
+                     header=TRUE)
+ 
+  . <- data$Gene.Symbol # pull out gene symbols
+  stats_out[i,3] <- length(unique(data[,5])) 
+}
+head(stats_out)
+# set up an output file and incorporate time stamp and minimal metadata
+
+write.table(cat("# Average unique gene symbols in replicates", "\n",
+                "# timestamp: ", as.character(Sys.time()), "\n",
+                file=files_out,
+                row.names="",
+                col.names="",
+                sep=""))
+
+# now add the data frame 
+write.table(x=stats_out,
+            file=files_out,
+            row.names=FALSE,
+            col.names=TRUE,
+            sep=",",
+            append=TRUE)
+```
+
