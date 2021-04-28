@@ -44,4 +44,6 @@ I kissed the Blarney Stone in Ireland when I was 12 years old. The story is that
 
 #### Week 12: [Batch processing files](HW11.html)
 
+#### Week 13: [ggplot fun](HW12.html)
+
 

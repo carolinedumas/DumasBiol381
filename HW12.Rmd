@@ -1,0 +1,107 @@
+---
+title: "HW 12"
+author: "Caroline Dumas"
+date: "April 28, 2021"
+output: html_document
+---
+For this exerise, use your newly-developed ggplot chops to create some nice graphs from your own data (If you do not have a good data frame to use for graphics, use one of the many built-in data frames from R (other than mpg, which we are using in class)). Experiment with different themes, theme base sizes, aesthetics, mappings, and faceting. When you are finished, try exporting them to high quality pdfs, jpgs, eps files, or other formats that you would use for submission to a journal.
+
+**I am going to try to graph raw data from mass spec files. We get raw spectra out of the mass spectrometry and then run them trough an online program to find the proteins that match the peptides. I want to visualize the raw points and show the cut off values we use with lines**
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(patchwork)
+
+# load table 
+raw_table <- read.table(file="fusion_exp7.3_raw.csv",
+                        sep=",",
+                        header=TRUE)
+head(raw_table)
+clean_table <- raw_table[complete.cases(raw_table),]
+
+# First just try to plot PPM and DeltaCorr scores using geom_point
+p1 <- ggplot(data=clean_table,
+             mapping=aes(x=PPM,
+                         y=DeltaCorr)) +
+      geom_point()
+print(p1)
+
+# now trying to color reverse hits a blue and forward hits red
+p1 <- ggplot(data=clean_table,
+             mapping=aes(x=PPM,
+                         y=DeltaCorr,
+                         col=startsWith(Reference, "%%"))) +
+      geom_point()
+
+
+p1 + scale_color_manual(values=c("red", "blue"))
+
+# Yay! that worked! now I want to add vertical lines at x= -6 and x = 5 to create a cut off. 
+p1 <- ggplot(data=clean_table,
+             mapping=aes(x=PPM,
+                         y=Uniq.DeltaCorr,
+                         col=startsWith(Reference, "%%"))) +
+      geom_point() +
+      geom_vline(xintercept=c(-6, 5))
+
+p1 + scale_color_manual(values=c("red", "blue"))
+
+# now add a horizontal line at 0.15
+p1 <- ggplot(data=clean_table,
+             mapping=aes(x=PPM,
+                         y=Uniq.DeltaCorr,
+                         col=startsWith(Reference, "%%"))) +
+      geom_point() +
+      geom_vline(xintercept=c(-6, 5)) +
+      geom_hline(yintercept=0.15)
+
+p1 <- p1 + scale_color_manual(values=c("red", "blue")) + theme(legend.position="none")
+
+# Now try to create a "zoom" graph that is only the points between ppm -6 and 5 and Uniq.DeltaCorr greater than 0.15
+p2 <- ggplot(data=clean_table,
+             mapping=aes(x=PPM,
+                         y=Uniq.DeltaCorr,
+                         col=startsWith(Reference, "%%"))) +
+      geom_point() +
+      xlim(-6,5) +
+      ylim(0.15,1)
+
+
+p2 <- p2 + scale_color_manual(values=c("red", "blue")) + theme(legend.position="none")
+
+# Now making a different version with different axes 
+p3 <- ggplot(data=clean_table,
+             mapping=aes(x=Uniq.DeltaCorr,
+                         y=XCorr,
+                         col=startsWith(Reference, "%%"))) +
+      geom_point() +
+      geom_vline(xintercept=0.15)+
+      geom_hline(yintercept=3)
+
+p3 <- p3 + scale_color_manual(values=c("red", "blue")) + theme(legend.position="none")
+
+# and making on more graph of the zoom in of p3
+p4 <- ggplot(data=clean_table,
+             mapping=aes(x=Uniq.DeltaCorr,
+                         y=XCorr,
+                         col=startsWith(Reference, "%%"))) +
+      geom_point() +
+      xlim(0.15,1)+
+      ylim(3,8)
+
+p4 <- p4 + scale_color_manual(values=c("red", "blue")) + theme(legend.position="none")
+
+```
+
+Now I have 4 graphs that I can facet together to make into one figure!
+
+```{r}
+# facet 4 graphs 
+final <- (p1 + p2) / (p3 + p4) + plot_annotation(title= "Filtering Raw Mass Spectra Data", tag_levels= "A")
+final
+# saving final graph 
+ggsave(plot=final, filename="Filtering_fusion_exp7.3_graphs",width=6,height=6,units="in",device="jpeg")
+```
+
+

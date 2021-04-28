@@ -1,9 +1,9 @@
-# Average unique gene symbols in replicates
-# timestamp: 2021-04-21 17:08:38
-"ID","file_name","Avg_GeneSymbol_length"
-1,"NCK1_blue_filtered_proteins.csv",193
-2,"NCK1_purple_filtered_proteins.csv",21
-3,"NCK1_yellow_filtered_proteins.csv",55
-4,"NCK2_green_filtered_proteins_MockTreatmentFlipped.csv",79
-5,"NCK2_orange_filtered_proteins.csv",119
-6,"NCK2_red_filtered_proteins.csv",58
+# Average unique gene symbols in replicates,,
+# timestampe: 2021-04-21 17:01:37,,
+ID,file_name,Avg_GeneSymbol_length
+1,NCK1_blue_filtered_proteins.csv,193
+2,NCK1_purple_filtered_proteins.csv,21
+3,NCK1_yellow_filtered_proteins.csv,55
+4,NCK2_green_filtered_proteins_MockTreatmentFlipped.csv,79
+5,NCK2_orange_filtered_proteins.csv,119
+6,NCK2_red_filtered_proteins.csv,58
